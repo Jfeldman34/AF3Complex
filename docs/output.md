@@ -1,4 +1,4 @@
-# AlphaFold 3 Output
+# AF3Complex Output
 
 ## Output Directory Structure
 
