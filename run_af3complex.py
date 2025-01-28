@@ -15,59 +15,59 @@ def parse_arguments():
     return parser.parse_args()
 
 def get_processing_file_path(json_file_path):
-    """Returns the processing file path in the same directory as the JSON file."""
+    """Returns the processing file path in the same directory as the input JSON file."""
     json_dir = os.path.dirname(json_file_path)
     return os.path.join(json_dir, "processing_file.txt")
 
 def add_to_processing(processing_file, object_name):
     """
-    Add the object name to the shared processing list with file locking.
+    Adds the protein name to the shared processing list with file locking.
     """
     with open(processing_file, "a+") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)  # Acquire an exclusive lock
+        fcntl.flock(f, fcntl.LOCK_EX) 
         f.seek(0)
         current_objects = f.read().splitlines()
         if object_name not in current_objects:
             f.write(object_name + "\n")
-        fcntl.flock(f, fcntl.LOCK_UN)  # Release the lock
+        fcntl.flock(f, fcntl.LOCK_UN)  
         print(f"Processing {object_name}")
 
 def remove_from_processing(processing_file, object_name):
     """
-    Remove the object name from the shared processing list with file locking.
+    Removes the object name from the shared processing list with file locking.
     """
     try:
         with open(processing_file, "r+") as f:
-            fcntl.flock(f, fcntl.LOCK_EX)  # Acquire an exclusive lock
+            fcntl.flock(f, fcntl.LOCK_EX)  
             current_objects = f.read().splitlines()
             f.seek(0)
-            f.truncate()  # Clear the file
+            f.truncate()  
             for obj in current_objects:
                 if obj != object_name:
                     f.write(obj + "\n")
-            fcntl.flock(f, fcntl.LOCK_UN)  # Release the lock
+            fcntl.flock(f, fcntl.LOCK_UN) 
     except FileNotFoundError:
-        pass  # If the file doesn't exist, there's nothing to remove
+        pass  
 
 def is_in_processing(processing_file, object_name):
     """
-    Check if an object is already in the shared processing list with file locking.
+    Checks if an object is already in the shared processing list.
     """
     try:
         with open(processing_file, "r") as f:
-            fcntl.flock(f, fcntl.LOCK_SH)  # Acquire a shared lock
+            fcntl.flock(f, fcntl.LOCK_SH) 
             current_objects = f.read().splitlines()
-            fcntl.flock(f, fcntl.LOCK_UN)  # Release the lock
+            fcntl.flock(f, fcntl.LOCK_UN) 
             if object_name in current_objects:
                 print(f"{object_name} already in processing. Skipping...")
             return object_name in current_objects
     except FileNotFoundError:
-        return False  # If the file doesn't exist, no objects are being processed
+        return False  
 
 def load_json_objects(file_path):
-    """Load a JSON file containing a list of JSON objects and return it as a list."""
+    """Loads a JSON file containing a list of JSON objects and return it as a list."""
     with open(file_path, 'r') as file:
-        data = json.load(file)  # Load the list of JSON objects
+        data = json.load(file)
     return data
 
 def main():
@@ -80,18 +80,15 @@ def main():
 
     processing_file = get_processing_file_path(json_file_path)
 
-    # Iterate over each JSON object in the main JSON file
     for individual_json in load_json_objects(json_file_path):
         protein_id = individual_json['name']
         output_dir_check = os.path.join(output_dir, individual_json['name'])
         output_lower_dir_check = os.path.join(output_dir, individual_json['name'].lower())
 
-        # Check if output already exists
         if os.path.isdir(output_dir_check) or os.path.isdir(output_lower_dir_check) or is_in_processing(processing_file, individual_json['name']):
             print(f"A model has already been generated for {individual_json['name']}")
             continue
 
-        # Check if there are any "ligand" keys in the "sequences" list
         sequences = individual_json.get('sequences', [])
         contains_ligand = any('ligand' in seq for seq in sequences)
         print(f"Contains ligands: {contains_ligand}")
@@ -101,7 +98,6 @@ def main():
             json.dump([individual_json], temp_file)
             temp_file_path = temp_file.name
 
-        # Define the command with the temporary file path as the JSON argument
         command = [
             "python", "run_intermediate.py",
             f"--json_path={temp_file_path}",
@@ -110,13 +106,11 @@ def main():
             f"--output_dir={output_dir}"
         ]
 
-        # First subprocess: run the command and check for "ligand" presence
         try:
             add_to_processing(processing_file, individual_json['name'])
             subprocess.run(command, check=True)
             print(f"First model successfully generated for {individual_json['name']}")
 
-            # If ligand is present, create a modified version of the JSON
             if contains_ligand:
                 protein_folder = os.path.join(output_dir, protein_id.lower())
                 data_json_path = os.path.join(protein_folder, f"{protein_id.lower()}_data.json")
@@ -124,7 +118,6 @@ def main():
                     with open(data_json_path, 'r') as data_file:
                         new_json = json.load(data_file)
 
-                    # Modify the "name" and remove the sequences with "ligand"
                     new_json['name'] = f"{new_json['name']}_without_ligands"
                     new_sequences = [seq for seq in new_json.get('sequences', []) if 'ligand' not in seq]
                     new_json['sequences'] = new_sequences
@@ -136,7 +129,6 @@ def main():
 
                     print(f"Generating a secondary model for {individual_json['name']}")
 
-                    # Run the second subprocess with the modified file
                     second_command = [
                         "python", "run_intermediate.py",
                         f"--json_path={new_temp_file_path}",
@@ -150,7 +142,6 @@ def main():
         except subprocess.CalledProcessError as e:
             print(f"Error running the AlphaFold intermediary script for {individual_json['name']}: {e}")
         finally:
-            # Ensure the temporary file is deleted
             os.remove(temp_file_path)
             remove_from_processing(processing_file, individual_json['name'])
 
