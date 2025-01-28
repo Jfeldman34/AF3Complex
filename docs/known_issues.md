@@ -1,4 +1,4 @@
-# Known Issues
+# Known Issues (Per the DeepMind Team)
 
 ## Numerical performance for different GPU devices
 
