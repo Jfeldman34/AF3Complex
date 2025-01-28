@@ -195,8 +195,11 @@ Also, to avoid a possible CUDA bottleneck, run this command within your workspac
 export XLA_FLAGS="--xla_gpu_enable_triton_gemm=false"
 ```
 
-You can now run AF3Complex on your device! Run the [this python file](run_af3complex.py) 
-from within the AF3Complex repository by running 
+## Completion
+
+You can now run AF3Complex on your device! 
+
+Run AF3Complex repository with the following command, substituting the appropriate paths.  
 
 ```
 run_af3complex.py --json_file_path=input_json_path --model_dir=model_parameters_path
