@@ -41,7 +41,7 @@ Using an existing Google Cloud project, we provisioned a new machine:
     [gpu-regions-zones](https://cloud.google.com/compute/docs/gpus/gpu-regions-zones).
 
 ```sh
-gcloud compute instances create alphafold3 \
+gcloud compute instances create af3complex \
     --machine-type a2-ultragpu-1g \
     --zone us-central1-a \
     --image-family ubuntu-2204-lts \
@@ -92,8 +92,7 @@ Proceed only if `nvidia-smi` has a sensible output.
 Install `git` and download the AF3Complex repository:
 
 ```sh
-git clone https://github.com/google-deepmind/alphafold3.git
-
+git clone https://github.com/Jfeldman34/AF3Complex.git
 
 ```
 Locate and cd into the cloned repository and then run 
@@ -126,7 +125,7 @@ installing on local SSD. We recommend running the following in a `screen` or
 `tmux` session as downloading and decompressing the databases takes some time.
 
 ```sh
-cd alphafold3  # Navigate to the directory with cloned AlphaFold 3 repository.
+cd af3complex  # Navigate to the directory with cloned AlphaFold 3 repository.
 ./fetch_databases.sh <DB_DIR>
 ```
 
