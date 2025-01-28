@@ -2,9 +2,9 @@
 
 ## Output Directory Structure
 
-For every input job, AlphaFold 3 writes all its outputs in a directory called by
+For every input job, AF3Complex writes all its outputs in a directory called by
 the sanitized version of the job name. E.g. for job name "My first fold (test)",
-AlphaFold 3 will write its outputs in a directory called `my_first_fold_test`.
+AF3Complex will write its outputs in a directory called `my_first_fold_test`.
 
 The following structure is used within the output directory:
 
@@ -13,10 +13,16 @@ The following structure is used within the output directory:
     `seed-<seed value>_sample-<sample number>`. Each of these directories
     contains a confidence JSON, summary confidence JSON, and the mmCIF with the
     predicted structure.
+
+    **NOTE**: The following names may be changed to
+    <job_name>_<file_name>_without_ligands.<file_extension>
+    if the input data included ligands and AF3Complex determined that the model
+    without ligands was superior to that with ligands.
+    
 *   Top-ranking prediction mmCIF: `<job_name>_model.cif`. This file contains the
     predicted coordinates and should be compatible with most structural biology
     tools. We do not provide the output in the PDB format, the CIF file can be
-    easily converted into one if needed.
+    easily converted into one if needed. 
 *   Top-ranking prediction confidence JSON: `<job_name>_confidences.json`.
 *   Top-ranking prediction summary confidence JSON:
     `<job_name>_summary_confidences.json`.
@@ -25,8 +31,9 @@ The following structure is used within the output directory:
 *   Ranking scores for all predictions: `ranking_scores.csv`. The prediction
     with highest ranking is the one included in the root directory.
 *   Output terms of use: `TERMS_OF_USE.md`.
+* 
 
-Below is an example AlphaFold 3 output directory listing for a job called
+Below is an example AF3Complex output directory listing for a job called
 "Hello Fold", that has been ran with 1 seed and 5 samples:
 
 ```text
@@ -61,7 +68,7 @@ hello_fold/
 
 ## Confidence Metrics
 
-Similar to AlphaFold2 and AlphaFold-Multimer, AlphaFold 3 outputs include
+Similar to AF2Complex, AF3Complex outputs include
 confidence metrics. The main metrics are:
 
 *   **pLDDT:** a per-atom confidence estimate on a 0-100 scale where a higher
@@ -96,17 +103,13 @@ confidence metrics. The main metrics are:
     for small structures or short chains, so pTM assigns values less than 0.05
     when fewer than 20 tokens are involved; for these cases PAE or pLDDT may be
     more indicative of prediction quality.
+*   **Predicted Interface-Similarity Score (pIS score)** [Gao and Skolnick, 2011](https://pmc.ncbi.nlm.nih.gov/articles/PMC3076516/).
+    The IS-score improves upon the TM-score to focus on interfacial residues in a protein complex
+    by examining both their geometric differences and the preserved contacts at the protein interface.
+    This score, like the ipTM and pTM, is a predicted metric, and any model with a score
+    above 0.6 is considered to be good. 
+    
 
-For detailed description of these confidence metrics see the
-[AlphaFold 3 paper](https://www.nature.com/articles/s41586-024-07487-w). For
-protein components, the
-[AlphaFold: A Practical guide](https://www.ebi.ac.uk/training/online/courses/alphafold/inputs-and-outputs/evaluating-alphafolds-predicted-structures-using-confidence-scores/)
-course for structures provides additional tutorials on the confidence metrics.
-
-If you are interested in a specific entity or interaction, then there are
-confidences available in the outputs which are specific to each chain or
-chain-pair, as opposed to the full complex. See below for more details on all
-the confidence metrics that are returned.
 
 ## Multi-Seed and Multi-Sample Results
 
@@ -139,6 +142,9 @@ Summary outputs:
 *   `iptm`: A scalar in the range 0-1 indicating predicted interface TM-score
     (confidence in the predicted interfaces) for all interfaces in the
     structure.
+*   `ranking_score`: A scalar in the range 0-1 indicating the predicted interface
+    similarity score for all interfacial residues. This is also the ranking_score
+    for comparison between generated models. 
 *   `fraction_disordered`: A scalar in the range 0-1 that indicates what
     fraction of the prediction structure is disordered, as measured by
     accessible surface area, see our
