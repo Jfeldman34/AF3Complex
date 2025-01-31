@@ -9,6 +9,124 @@ single JSON file containing a list of JSON objects in the input format specified
 You must specify the input format for the JSONS in the list of JSON objects as either 
 `af3` or `server`, depending on whether you use the AlphaFold3 or AlphaFoldServer input formats. 
 
+In example, would look like the following if the input was in the `af3` format. 
+
+```json
+
+[{
+  "name": "Hello fold",
+  "modelSeeds": [10, 42],
+  "sequences": [
+    {
+      "protein": {
+        "id": "A",
+        "sequence": "PVLSCGEWQL",
+        "modifications": [
+          {"ptmType": "HY3", "ptmPosition": 1},
+          {"ptmType": "P1L", "ptmPosition": 5}
+        ],
+        "unpairedMsa": ...,
+      }
+    },
+    {
+      "ligand": {
+        "id": ["F", "G", "H"],
+        "ccdCodes": ["ATP"]
+      }
+    }
+  ],
+  "bondedAtomPairs": ...,
+  "userCCD": ...,
+  "dialect": "alphafold3",
+  "version": 1
+},
+
+{
+  "name": "Hello fold 2",
+  "modelSeeds": [10, 42],
+  "sequences": [
+    {
+      "protein": {
+        "id": "A",
+        "sequence": "PVLSCGEWQL",
+        "modifications": [
+          {"ptmType": "HY3", "ptmPosition": 1},
+          {"ptmType": "P1L", "ptmPosition": 5}
+        ],
+        "unpairedMsa": ...,
+      }
+    },
+    {
+      "ligand": {
+        "id": ["F", "G", "H"],
+        "ccdCodes": ["ATP"]
+      }
+    }
+  ],
+  "bondedAtomPairs": ...,
+  "userCCD": ...,
+  "dialect": "alphafold3",
+  "version": 1
+}
+
+]
+
+
+
+
+```
+
+If the JSONs were instead in the `server` format, they would look as follows.
+
+
+```json
+
+[
+    {
+        "name": "Input fold 1",
+        "modelSeeds": [
+            "2655502818"
+        ],
+        "sequences": [
+            {
+                "proteinChain": {
+                    "sequence": "GSHMMPQLQFKDAFWCRDFTAHTGYEVLLQRLLDGRKMCKDMEELLRQRAQAEERYGKELVQI",
+                    "count": 2
+                }
+            }
+        ]
+    },
+
+     {
+        "name": "Input Fold 2",
+        "modelSeeds": [
+            "3572454651"
+        ],
+        "sequences": [
+            {
+                "proteinChain": {
+                    "sequence": "MKIERKFTTAEGGAYGGVGFTTTVSEIRNPDG",
+                    "count": 2
+                }
+            },
+            {
+                "ligand": {
+                    "ligand": "DTP",
+                    "count": 2
+                }
+            },
+            {
+                "ligand": {
+                    "ligand": "MG",
+                    "count": 2
+                }
+            }
+        ]
+    }
+]
+
+```
+
 ## Input Format
 
 AF3Complex can use either the custom JSON input format for the AlphaFoldServer, as outlined at
