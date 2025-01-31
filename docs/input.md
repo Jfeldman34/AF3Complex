@@ -68,7 +68,7 @@ In example, would look like the following if the input was in the `af3` format.
 
 ```
 
-If the JSONs were instead in the `server` format, they would look as follows.
+An example of a file with JSONs in the `server` format is as follows. 
 
 
 ```json
