@@ -7,11 +7,12 @@ import shutil
 import argparse
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Run AF3Complex with JSON input and optional ligand handling.")
+    parser = argparse.ArgumentParser(description="Run AF3Complex.")
     parser.add_argument("--json_file_path", required=True, help="Path to the JSON file containing input data.")
     parser.add_argument("--model_dir", required=True, help="Path to the model directory.")
     parser.add_argument("--db_dir", required=True, help="Path to the database directory.")
     parser.add_argument("--output_dir", required=True, help="Path to the output directory.")
+    parser.add_argument("--input_json_type", choices=["af3", "server"], required=True, help="Specify the input JSON type: 'af3' or 'server'.")
     return parser.parse_args()
 
 def get_processing_file_path(json_file_path):
@@ -77,6 +78,7 @@ def main():
     model_dir = args.model_dir
     db_dir = args.db_dir
     output_dir = args.output_dir
+    input_json_type = args.input_json_type
 
     processing_file = get_processing_file_path(json_file_path)
 
@@ -95,7 +97,11 @@ def main():
 
         # Create a temporary JSON file for the individual JSON object
         with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
-            json.dump([individual_json], temp_file)
+            if input_json_type == ligand: 
+                json.dump([individual_json], temp_file)
+            else: 
+                json.dump(individual_json, temp_file)
+
             temp_file_path = temp_file.name
 
         command = [
@@ -124,7 +130,10 @@ def main():
 
                     # Create a temporary modified JSON file
                     with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as new_temp_file:
-                        json.dump(new_json, new_temp_file) 
+                        if input_json_type == ligand: 
+                            json.dump([individual_json], temp_file)
+                        else: 
+                            json.dump(individual_json, temp_file)
                         new_temp_file_path = new_temp_file.name
 
                     print(f"Generating a secondary model for {individual_json['name']}")
