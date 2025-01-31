@@ -21,10 +21,7 @@ In example, would look like the following if the input was in the `af3` format.
       "protein": {
         "id": "A",
         "sequence": "PVLSCGEWQL",
-        "modifications": [
-          {"ptmType": "HY3", "ptmPosition": 1},
-          {"ptmType": "P1L", "ptmPosition": 5}
-        ],
+        "modifications": [],
         "unpairedMsa": ...,
       }
     },
@@ -49,10 +46,7 @@ In example, would look like the following if the input was in the `af3` format.
       "protein": {
         "id": "A",
         "sequence": "PVLSCGEWQL",
-        "modifications": [
-          {"ptmType": "HY3", "ptmPosition": 1},
-          {"ptmType": "P1L", "ptmPosition": 5}
-        ],
+        "modifications": [],
         "unpairedMsa": ...,
       }
     },
@@ -67,9 +61,7 @@ In example, would look like the following if the input was in the `af3` format.
   "userCCD": ...,
   "dialect": "alphafold3",
   "version": 1
-}
-
-]
+}]
 
 
 
@@ -81,8 +73,7 @@ If the JSONs were instead in the `server` format, they would look as follows.
 
 ```json
 
-[
-    {
+[{
         "name": "Input fold 1",
         "modelSeeds": [
             "2655502818"
@@ -122,8 +113,7 @@ If the JSONs were instead in the `server` format, they would look as follows.
                 }
             }
         ]
-    }
-]
+    }]
 
 ```
 
