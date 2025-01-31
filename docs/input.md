@@ -2,20 +2,20 @@
 
 ## Specifying Input Files
 
-You can provide inputs to `run_alphafold.py` in one of two ways:
+You can provide inputs to `run_af3complex.py` by
+using the `--json_path` flag followed by the path to a
+single JSON file containing a list of JSON objects in the input format specified below.
 
--   Single input file: Use the `--json_path` flag followed by the path to a
-    single JSON file.
--   Multiple input files: Use the `--input_dir` flag followed by the path to a
-    directory of JSON files.
+You must specify the input format for the JSONS in the list of JSON objects as either 
+`af3` or `server`, depending on whether you use the AlphaFold3 or AlphaFoldServer input formats. 
 
 ## Input Format
 
-AlphaFold 3 uses a custom JSON input format differing from the
-[AlphaFold Server JSON input format](https://github.com/google-deepmind/alphafold/tree/main/server).
-See [below](#alphafold-server-json-compatibility) for more information.
+AF3Complex can use either the custom JSON input format for the AlphaFoldServer, as outlined at
+[AlphaFold Server JSON input format](https://github.com/google-deepmind/alphafold/tree/main/server), 
+or the custom AlphaFold3 input format. 
 
-The custom AlphaFold 3 format allows:
+Unlike the AlphaFoldServer format, the custom AlphaFold3 format allows:
 
 *   Specifying protein, RNA, and DNA chains, including modified residues.
 *   Specifying custom multiple sequence alignment (MSA) for protein and RNA
@@ -29,67 +29,54 @@ The custom AlphaFold 3 format allows:
 *   Specifying covalent bonds between entities.
 *   Specifying multiple random seeds.
 
-## AlphaFold Server JSON Compatibility
+## AlphaFoldServer JSON Compatibility
 
 The [AlphaFold Server](https://alphafoldserver.com/) uses a separate
 [JSON format](https://github.com/google-deepmind/alphafold/tree/main/server)
-from the one used here in the AlphaFold 3 codebase. In particular, the JSON
-format used in the AlphaFold 3 codebase offers more flexibility and control in
+from AlphaFold3, which can be processed by AF3Complex. In particular, the AlphaFold3 
+format offers more flexibility and control in
 defining custom ligands, branched glycans, and covalent bonds between entities.
 
-We provide a converter in `run_alphafold.py` which automatically detects the
-input JSON format, denoted `dialect` in the converter code. The converter
-denotes the AlphaFoldServer JSON as `alphafoldserver`, and the JSON format
-defined here in the AlphaFold 3 codebase as `alphafold3`. If the detected input
-JSON format is `alphafoldserver`, then the converter will translate that into
-the JSON format `alphafold3`.
+When running AF3Complex, you must denote which format you are using by specifying under
+the  `--input_json_type` either `af3` for the standard AlphaFold3 format or `server` 
+for the the AlphaFoldServer format.
 
 ### Multiple Inputs
 
-The top-level of the `alphafoldserver` JSON format is a list, allowing
-specification of multiple inputs in a single JSON. In contrast, the `alphafold3`
-JSON format requires exactly one input per JSON file. Specifying multiple inputs
-in a single `alphafoldserver` JSON is fully supported.
+For both input types, one can specify multiple inputs by including multiple  
+JSON objects within the list. The file containing the list should be the one 
+specified under `--json_path` in the program arguments. 
 
-Note that the converter distinguishes between `alphafoldserver` and `alphafold3`
-JSON formats by checking if the top-level of the JSON is a list or not. In
-particular, if you pass in a `alphafoldserver`-style JSON without a top-level
-list, then this is considered incorrect and `run_alphafold.py` will raise an
-error.
+Make sure to use only the specific JSON format passed into `run_af3complex.py`
+within the JSON list. 
 
 ### Glycans
 
-If the JSON in `alphafoldserver` format specifies glycans, the converter will
-raise an error. This is because translating glycans specified in the
-`alphafoldserver` format to the `alphafold3` format is not currently supported.
+If the `--input_json_type` is `server` and the JSON specifies glycans, the converter will
+raise an error. 
 
 ### Random Seeds
 
-The `alphafoldserver` JSON format allows users to specify `"modelSeeds": []`, in
+The `server` JSON format allows users to specify `"modelSeeds": []`, in
 which case a seed is chosen randomly for the user. On the other hand, the
-`alphafold3` format requires users to specify a seed.
-
-The converter will choose a seed randomly if `"modelSeeds": []` is set when
-translating from `alphafoldserver` JSON format to `alphafold3` JSON format. If
-seeds are specified in the `alphafoldserver` JSON format, then those will be
-preserved in the translation to the `alphafold3` JSON format.
+`af3` format requires users to specify a seed.
 
 ### Ions
 
-While AlphaFold Server treats ions and ligands as different entity types in the
-JSON format, AlphaFold 3 treats ions as ligands. Therefore, to specify e.g. a
+While the `server` treats ions and ligands as different entity types in the
+JSON format, the `af3` format treats ions as ligands. Therefore, to specify e.g. a
 magnesium ion, one would specify it as an entity of type `ligand` with
 `ccdCodes: ["MG"]`.
 
 ### Sequence IDs
 
-The `alphafold3` JSON format requires the user to specify a unique identifier
-(`id`) for each entity. On the other hand, the `alphafoldserver` does not allow
-specification of an `id` for each entity. Thus, the converter automatically
+The `af3` JSON format requires the user to specify a unique identifier
+(`id`) for each entity. On the other hand, the `server` does not allow
+specification of an `id` for each entity. Thus, the program automatically
 assigns one.
 
 The converter iterates through the list provided in the `sequences` field of the
-`alphafoldserver` JSON format, assigning an `id` to each entity using the
+`server` JSON format, assigning an `id` to each entity using the
 following order ("reverse spreadsheet style"):
 
 ```
