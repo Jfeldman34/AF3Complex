@@ -198,11 +198,12 @@ export XLA_FLAGS="--xla_gpu_enable_triton_gemm=false"
 
 You can now run AF3Complex on your device! 
 
-Run AF3Complex repository with the following command, substituting the appropriate paths.  
+Run AF3Complex repository with the following command, substituting the appropriate paths
+and values.  
 
 ```
 run_af3complex.py --json_file_path=input_json_path --model_dir=model_parameters_path
---db_dir=database_dir_path --output_dir=output_dir_path
+--db_dir=database_dir_path --output_dir=output_dir_path --input_json_type=either_af3_or_server
 ```
 
 
