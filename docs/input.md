@@ -160,7 +160,7 @@ within the JSON list.
 
 ### Glycans
 
-If the `--input_json_type` is `server` and the JSON specifies glycans, the converter will
+If the `--input_json_type` is `server` and the JSON specifies glycans, the program will
 raise an error. 
 
 ### Random Seeds
