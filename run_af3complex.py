@@ -79,6 +79,8 @@ def main():
     db_dir = args.db_dir
     output_dir = args.output_dir
     input_json_type = args.input_json_type
+    new_temp_file_path = None 
+
 
     processing_file = get_processing_file_path(json_file_path)
 
@@ -95,9 +97,8 @@ def main():
         contains_ligand = any('ligand' in seq for seq in sequences)
         print(f"Contains ligands: {contains_ligand}")
 
-        # Create a temporary JSON file for the individual JSON object
         with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
-            if input_json_type == ligand: 
+            if input_json_type == 'server': 
                 json.dump([individual_json], temp_file)
             else: 
                 json.dump(individual_json, temp_file)
@@ -128,12 +129,11 @@ def main():
                     new_sequences = [seq for seq in new_json.get('sequences', []) if 'ligand' not in seq]
                     new_json['sequences'] = new_sequences
 
-                    # Create a temporary modified JSON file
                     with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as new_temp_file:
-                        if input_json_type == ligand: 
-                            json.dump([individual_json], temp_file)
+                        if input_json_type == 'server': 
+                            json.dump([new_json], new_temp_file)
                         else: 
-                            json.dump(individual_json, temp_file)
+                            json.dump(new_json, new_temp_file)
                         new_temp_file_path = new_temp_file.name
 
                     print(f"Generating a secondary model for {individual_json['name']}")
@@ -153,6 +153,31 @@ def main():
         finally:
             os.remove(temp_file_path)
             remove_from_processing(processing_file, individual_json['name'])
+            if new_temp_file_path and os.path.exists(new_temp_file_path):
+                 os.remove(new_temp_file_path)  #
+
+        try:
+            protein_folder = os.path.join(output_dir, protein_id.lower())
+            protein_summary_path = os.path.join(protein_folder, f"{protein_id.lower()}_summary_confidences.json")
+            without_ligand_folder = os.path.join(output_dir, f"{protein_id.lower()}_without_ligands")
+            without_ligand_summary_path = os.path.join(without_ligand_folder, f"{protein_id.lower()}_without_ligands_summary_confidences.json")
+        
+            with open(protein_summary_path, 'r') as f:
+                protein_summary = json.load(f)
+            protein_ranking_score = protein_summary.get('ranking_score', -1)
+        
+            with open(without_ligand_summary_path, 'r') as f:
+                without_ligand_summary = json.load(f)
+            without_ligand_ranking_score = without_ligand_summary.get('ranking_score', -1)
+        
+            if protein_ranking_score > without_ligand_ranking_score:
+                shutil.rmtree(without_ligand_folder)
+                os.rename(protein_folder, os.path.join(output_dir, protein_id.lower()))
+            else:
+                shutil.rmtree(protein_folder)
+                os.rename(without_ligand_folder, os.path.join(output_dir, protein_id.lower()))
+        except Exception as e:
+            print(f"Error comparing ranking scores: {e}")
 
 if __name__ == "__main__":
     main()
