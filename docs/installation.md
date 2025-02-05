@@ -1,6 +1,6 @@
 # Installation and Running Your First Prediction
 
-You will need a machine running Linux; AlphaFold 3 does not support other
+You will need a machine running Linux; AF3Complex does not support other
 operating systems. Full installation requires up to 1 TB of disk space to keep
 genetic databases (SSD storage is recommended) and an NVIDIA GPU with Compute
 Capability 8.0 or greater (GPUs with more memory can predict larger protein
@@ -18,70 +18,6 @@ of a Docker container, please ensure CUDA, cuDNN, and JAX are correctly
 installed; the
 [JAX installation documentation](https://jax.readthedocs.io/en/latest/installation.html#nvidia-gpu)
 is a useful reference for this case.
-
-The instructions provided below describe how to:
-
-1.  Provision a machine on GCP.
-1.  Install NVIDIA drivers for an A100.
-1.  Obtain genetic databases.
-1.  Obtain model parameters.
-1.  Build the AlphaFold 3 Docker container or Singularity image.
-
-## Provisioning a Machine
-
-Clean Ubuntu images are available on Google Cloud, AWS, Azure, and other major
-platforms.
-
-Using an existing Google Cloud project, we provisioned a new machine:
-
-*   We recommend using `--machine-type a2-ultragpu-1g` but feel free to use
-    `--machine-type a2-highgpu-1g` for smaller predictions.
-*   If desired, replace `--zone us-central1-a` with a zone that has quota for
-    the machine you have selected. See
-    [gpu-regions-zones](https://cloud.google.com/compute/docs/gpus/gpu-regions-zones).
-
-```sh
-gcloud compute instances create af3complex \
-    --machine-type a2-ultragpu-1g \
-    --zone us-central1-a \
-    --image-family ubuntu-2204-lts \
-    --image-project ubuntu-os-cloud \
-    --maintenance-policy TERMINATE \
-    --boot-disk-size 1000 \
-    --boot-disk-type pd-balanced
-```
-
-This provisions a bare Ubuntu 22.04 LTS image on an
-[A2 Ultra](https://cloud.google.com/compute/docs/accelerator-optimized-machines#a2-vms)
-machine with 12 CPUs, 170 GB RAM, 1 TB disk and NVIDIA A100 80 GB GPU attached.
-We verified the following installation steps from this point.
-
-## Installing GPU Support
-
-### Installing NVIDIA Drivers
-
-Official Ubuntu instructions are
-[here](https://documentation.ubuntu.com/server/how-to/graphics/install-nvidia-drivers/).
-The commands we ran are:
-
-```sh
-sudo apt-get -y install alsa-utils ubuntu-drivers-common
-sudo ubuntu-drivers install
-
-sudo nvidia-smi --gpu-reset
-
-nvidia-smi  # Check that the drivers are installed.
-```
-
-Accept the "Pending kernel upgrade" dialog if it appears.
-
-You will need to reboot the instance with `sudo reboot now` to reset the GPU if
-you see the following warning:
-
-```text
-NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver.
-Make sure that the latest NVIDIA driver is installed and running.
-```
 
 Proceed only if `nvidia-smi` has a sensible output.
 
@@ -125,12 +61,12 @@ installing on local SSD. We recommend running the following in a `screen` or
 `tmux` session as downloading and decompressing the databases takes some time.
 
 ```sh
-cd af3complex  # Navigate to the directory with cloned AlphaFold 3 repository.
+cd af3complex  # Navigate to the directory with cloned AF3Complex repository.
 ./fetch_databases.sh <DB_DIR>
 ```
 
 This script downloads the databases from a mirror hosted on GCS, with all
-versions being the same as used in the AlphaFold 3 paper.
+versions being the same as used in the AF3Complex paper.
 
 :ledger: **Note: The download directory `<DB_DIR>` should *not* be a
 subdirectory in the AF3Complex repository directory.** If it is, the Docker
