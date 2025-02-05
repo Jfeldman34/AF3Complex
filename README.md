@@ -1,5 +1,5 @@
 ![header](docs/header.png)
-al
+
 # AF3Complex
 
 The following package provides the full implementation of the AF3Complex protein
