@@ -32,7 +32,7 @@ See the [input documentation](docs/input.md).
 
 See the [output documentation](docs/output.md).
 
-## AF3Complex
+## AF3Complex Performance
 
 See the [performance documentation](docs/performance.md), which is based on the performance
 information of the parent model of AF3Complex, AlphaFold3.
