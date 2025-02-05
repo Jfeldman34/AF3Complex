@@ -1,4 +1,4 @@
-# AlphaFold 3 Input
+# AF3Complex Input
 
 ## Specifying Input Files
 
@@ -419,11 +419,11 @@ the paper.
 
 RNA `unpairedMsa` can be either:
 
-1.  Unset (or set explicitly to `null`). AlphaFold 3 won't build MSA for this
+1.  Unset (or set explicitly to `null`). AF3Complex won't build MSA for this
     RNA chain.
-2.  Set to an empty string (`""`). AlphaFold 3 won't build MSA and will run
+2.  Set to an empty string (`""`). AF3Complex won't build MSA and will run
     MSA-free for this RNA chain.
-3.  Set to a non-empty A3M string. AlphaFold 3 will use the provided MSA for
+3.  Set to a non-empty A3M string. AF3Complex will use the provided MSA for
     this RNA chain.
 
 ### Protein Multiple Sequence Alignment
@@ -434,20 +434,20 @@ unpaired MSA (see [MSA Pairing](#msa-pairing) below for more details).
 The following combinations are valid for a given protein chain:
 
 1.  Both `unpairedMsa` and `pairedMsa` fields are unset (or explicitly set to
-    `null`), AlphaFold 3 will build both MSAs automatically. This is the
+    `null`), AF3Complex will build both MSAs automatically. This is the
     recommended option.
 2.  The `unpairedMsa` is set to to a non-empty A3M string, `pairedMsa` set to an
-    empty string (`""`). AlphaFold 3 won't build MSA, will use the `unpairedMsa`
+    empty string (`""`). AF3Complex won't build MSA, will use the `unpairedMsa`
     as is and run `pairedMSA`-free.
 3.  The `pairedMsa` is set to to a non-empty A3M string, `unpairedMsa` set to an
-    empty string (`""`). AlphaFold 3 won't build MSA, will use the `pairedMsa`
+    empty string (`""`). AF3Complex won't build MSA, will use the `pairedMsa`
     and run `unpairedMSA`-free. **This option is not recommended**, see
     [MSA Pairing](#msa-pairing) below.
 4.  Both `unpairedMsa` and `pairedMsa` fields are set to an empty string (`""`).
-    AlphaFold 3 will not build the MSA and the MSA input to the model will be
+    AF3Complex will not build the MSA and the MSA input to the model will be
     just the query sequence (equivalent to running completely MSA-free).
 5.  Both `unpairedMsa` and `pairedMsa` fields are set to a custom non-empty A3M
-    string, AlphaFold 3 will use the provided MSA instead of building one as
+    string, AF3Complex will use the provided MSA instead of building one as
     part of the data pipeline. This is considered an expert option.
 
 Note that both `unpairedMsa` and `unpairedMsa` have to either be *both* set
@@ -488,7 +488,7 @@ one can end up with rows in the concatenated MSA that are formed by sequences
 from different organisms.
 
 It may be desirable to ensure that across multiple chains, sequences in the MSA
-that are from the same organism end up in the same MSA row. AlphaFold 3
+that are from the same organism end up in the same MSA row. AF3Complex
 internally achieves this by looking for the UniProt organism ID in the
 `pairedMsa` and pairing sequences based on this information.
 
@@ -592,7 +592,7 @@ Or you can simply fully omit them:
 }
 ```
 
-You can also run with pre-computed MSA, but let AlphaFold 3 search for
+You can also run with pre-computed MSA, but let AF3Complex search for
 templates. This can be achieved by setting `unpairedMsa` and `pairedMsa`, but
 keeping templates unset (or set to `null`). The profile given as an input to
 Hmmsearch when searching for templates will be built from the provided
@@ -810,7 +810,7 @@ _pdbx_chem_comp_descriptor.descriptor 'Oc1ccc(O)c2C(=O)C=CC(=O)c12'
 ## Full Example
 
 An example illustrating all the aspects of the input format is provided below.
-Note that AlphaFold 3 won't run this input out of the box as it abbreviates
+Note that AF3Complex won't run this input out of the box as it abbreviates
 certain fields and the sequences are not biologically meaningful.
 
 ```json
