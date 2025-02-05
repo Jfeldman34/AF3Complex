@@ -1,4 +1,4 @@
-![header](docs/header.jpg)
+![header](docs/header.png)
 
 # AlphaFold 3
 
