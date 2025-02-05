@@ -1,5 +1,5 @@
 ![header](docs/header.png)
-
+al
 # AF3Complex
 
 The following package provides the full implementation of the AF3Complex protein
@@ -13,7 +13,7 @@ and performance.
 This repository contains all the code necessary to run AF3Complex. However, 
 for inference pipeline to run, one must provide the AlphaFold3 model weights. 
 
-To request access to the AlphaFold 3 model parameters, please complete
+To request access to the AlphaFold3 model parameters, please complete
 [this form](https://forms.gle/svvpY4u2jsHEwWYS6). Access to the model's weights
 is granted solely at Google DeepMind’s discretion.
 
