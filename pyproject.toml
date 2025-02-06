@@ -13,7 +13,6 @@ name = "AF3Complex"
 version = "3.0.0"
 requires-python = ">=3.11"
 readme = "README.md"
-license = {file = "LICENSE"}
 dependencies = [
     "absl-py",
     "chex",
