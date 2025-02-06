@@ -28,14 +28,12 @@ def build_data():
       break
   else:
     raise ValueError('Could not find components.cif')
-    
-  #Modification: the path that the pickle file is written to has been changed to avoid some issues with location and editing. 
-  #This will need to be retroactively modified later. 
 
-  out_root = pathlib.Path("/storage/coda1/p-jskolnick3/0/jfeldman34/alphafold3/alphafold_package/"
-                            "alphafold3/src/alphafold3/constants/converters/")
-  ccd_pickle_path = out_root / 'ccd.pickle'
-  chemical_component_sets_pickle_path = out_root / 'chemical_component_sets.pickle'
+  out_root = resources.files(alphafold3.constants.converters)
+  ccd_pickle_path = out_root.joinpath('ccd.pickle')
+  chemical_component_sets_pickle_path = out_root.joinpath(
+      'chemical_component_sets.pickle'
+  )
   ccd_pickle_gen.main(['', str(cif_path), str(ccd_pickle_path)])
   chemical_component_sets_gen.main(
       ['', str(chemical_component_sets_pickle_path)]
