@@ -87,9 +87,3 @@ target_link_libraries(
 
 target_compile_definitions(cpp PRIVATE VERSION_INFO=${PROJECT_VERSION})
 install(TARGETS cpp LIBRARY DESTINATION alphafold3)
-install(
-  FILES LICENSE
-        OUTPUT_TERMS_OF_USE.md
-        WEIGHTS_PROHIBITED_USE_POLICY.md
-        WEIGHTS_TERMS_OF_USE.md
-  DESTINATION alphafold3)
