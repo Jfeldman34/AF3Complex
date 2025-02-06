@@ -9,7 +9,7 @@ requires = [
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "alphafold3"  # Change AF3Complex to alphafold3
+name = "alphafold3"  # ensures the alphafold3 backend code is employed where necessary
 version = "3.0.0"
 requires-python = ">=3.11"
 readme = "README.md"
