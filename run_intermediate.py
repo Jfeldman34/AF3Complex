@@ -441,9 +441,7 @@ def write_outputs(
   max_ranking_score = None
   max_ranking_result = None
 
-  output_terms = (
-      pathlib.Path(alphafold3.cpp.__file__).parent / 'OUTPUT_TERMS_OF_USE.md'
-  ).read_text()
+
 
   os.makedirs(output_dir, exist_ok=True)
   for results_for_seed in all_inference_results:
@@ -464,8 +462,6 @@ def write_outputs(
     post_processing.write_output(
         inference_result=max_ranking_result,
         output_dir=output_dir,
-        # The output terms of use are the same for all seeds/samples.
-        terms_of_use=output_terms,
         name=job_name,
     )
     # Save csv of ranking scores with seeds and sample indices, to allow easier
