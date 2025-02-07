@@ -155,29 +155,31 @@ def main():
             remove_from_processing(processing_file, individual_json['name'])
             if new_temp_file_path and os.path.exists(new_temp_file_path):
                  os.remove(new_temp_file_path)  #
-
-        try:
-            protein_folder = os.path.join(output_dir, protein_id.lower())
-            protein_summary_path = os.path.join(protein_folder, f"{protein_id.lower()}_summary_confidences.json")
-            without_ligand_folder = os.path.join(output_dir, f"{protein_id.lower()}_without_ligands")
-            without_ligand_summary_path = os.path.join(without_ligand_folder, f"{protein_id.lower()}_without_ligands_summary_confidences.json")
-        
-            with open(protein_summary_path, 'r') as f:
-                protein_summary = json.load(f)
-            protein_ranking_score = protein_summary.get('ranking_score', -1)
-        
-            with open(without_ligand_summary_path, 'r') as f:
-                without_ligand_summary = json.load(f)
-            without_ligand_ranking_score = without_ligand_summary.get('ranking_score', -1)
-        
-            if protein_ranking_score > without_ligand_ranking_score:
-                shutil.rmtree(without_ligand_folder)
-                os.rename(protein_folder, os.path.join(output_dir, protein_id.lower()))
-            else:
-                shutil.rmtree(protein_folder)
-                os.rename(without_ligand_folder, os.path.join(output_dir, protein_id.lower()))
-        except Exception as e:
-            print(f"Error comparing ranking scores: {e}")
+        if contains_ligand: 
+            try:
+                protein_folder = os.path.join(output_dir, protein_id.lower())
+                protein_summary_path = os.path.join(protein_folder, f"{protein_id.lower()}_summary_confidences.json")
+                without_ligand_folder = os.path.join(output_dir, f"{protein_id.lower()}_without_ligands")
+                without_ligand_summary_path = os.path.join(without_ligand_folder, f"{protein_id.lower()}_without_ligands_summary_confidences.json")
+            
+                with open(protein_summary_path, 'r') as f:
+                    protein_summary = json.load(f)
+                protein_ranking_score = protein_summary.get('ranking_score', -1)
+                print(f"With ligands score: {protein_ranking_score}")
+            
+                with open(without_ligand_summary_path, 'r') as f:
+                    without_ligand_summary = json.load(f)
+                without_ligand_ranking_score = without_ligand_summary.get('ranking_score', -1)
+                print(f"Without ligands score: {without_ligand_ranking_score}")
+            
+                if protein_ranking_score > without_ligand_ranking_score:
+                    shutil.rmtree(without_ligand_folder)
+                    os.rename(protein_folder, os.path.join(output_dir, protein_id.lower()))
+                else:
+                    shutil.rmtree(protein_folder)
+                    os.rename(without_ligand_folder, os.path.join(output_dir, protein_id.lower()))
+            except Exception as e:
+                print(f"Error comparing ranking scores: {e}")
 
 if __name__ == "__main__":
     main()
