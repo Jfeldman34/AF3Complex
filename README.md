@@ -21,7 +21,7 @@ is granted solely at Google DeepMind’s discretion.
 
 See the [installation documentation](docs/installation.md).
 
-There are several flags that one must pass to the `run_af3complex.py` command, to
+There are several flags that one must pass into the `run_af3complex.py` program, to
 list them all run `python run_af3complex.py --help`. 
 
 ## AF3Complex Input
