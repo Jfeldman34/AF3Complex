@@ -55,7 +55,7 @@ model parameters or outputs produced by those should cite:
 
 ## Acknowledgements
 
-We would like to thank the researchers at Google DeepMind for developing AlphaFold3 and making it 
+We would like to thank the phenomenal researchers at Google DeepMind for developing AlphaFold3 and making it 
 open-source. Without their work, AF3Complex could not have been developed. 
 
 
