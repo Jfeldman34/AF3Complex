@@ -11,7 +11,7 @@ and performance.
 ## Obtaining Model Parameters for AF3Complex
 
 This repository contains all the code necessary to run AF3Complex. However, 
-for inference pipeline to run, one must provide the AlphaFold3 model weights. 
+for the inference pipeline to run, one must provide the AlphaFold3 model weights. 
 
 To request access to the AlphaFold3 model parameters, please complete
 [this form](https://forms.gle/svvpY4u2jsHEwWYS6). Access to the model's weights
