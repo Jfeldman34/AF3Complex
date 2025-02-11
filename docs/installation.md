@@ -27,7 +27,7 @@ Proceed only if `nvidia-smi` has a sensible output.
 
 Install `git` and download the AF3Complex repository:
 
-```sh
+```
 git clone https://github.com/Jfeldman34/AF3Complex.git
 
 ```
