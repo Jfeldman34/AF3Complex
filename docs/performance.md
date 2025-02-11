@@ -1,4 +1,4 @@
-# Performance (For AlphaFold3, but directly applicable)
+# Performance (Including that of AlphaFold3)
 
 ## Data Pipeline
 
