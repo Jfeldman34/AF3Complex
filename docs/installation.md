@@ -31,7 +31,7 @@ Install `git` and download the AF3Complex repository:
 git clone https://github.com/Jfeldman34/AF3Complex.git
 
 ```
-Locate and cd into the cloned repository and then run 
+Locate and cd into the cloned repository and then run: 
 
 ```
 pip install .
