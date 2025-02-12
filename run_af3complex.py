@@ -16,14 +16,11 @@ def parse_arguments():
     return parser.parse_args()
 
 def get_processing_file_path(json_file_path):
-    """Returns the processing file path in the same directory as the input JSON file."""
     json_dir = os.path.dirname(json_file_path)
     return os.path.join(json_dir, "processing_file.txt")
 
 def add_to_processing(processing_file, object_name):
-    """
-    Adds the protein name to the shared processing list with file locking.
-    """
+   
     with open(processing_file, "a+") as f:
         fcntl.flock(f, fcntl.LOCK_EX) 
         f.seek(0)
@@ -34,9 +31,7 @@ def add_to_processing(processing_file, object_name):
         print(f"Processing {object_name}")
 
 def remove_from_processing(processing_file, object_name):
-    """
-    Removes the object name from the shared processing list with file locking.
-    """
+   
     try:
         with open(processing_file, "r+") as f:
             fcntl.flock(f, fcntl.LOCK_EX)  
@@ -51,9 +46,7 @@ def remove_from_processing(processing_file, object_name):
         pass  
 
 def is_in_processing(processing_file, object_name):
-    """
-    Checks if an object is already in the shared processing list.
-    """
+   
     try:
         with open(processing_file, "r") as f:
             fcntl.flock(f, fcntl.LOCK_SH) 
@@ -66,7 +59,7 @@ def is_in_processing(processing_file, object_name):
         return False  
 
 def load_json_objects(file_path):
-    """Loads a JSON file containing a list of JSON objects and return it as a list."""
+    
     with open(file_path, 'r') as file:
         data = json.load(file)
     return data
