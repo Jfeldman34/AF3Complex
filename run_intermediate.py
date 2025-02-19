@@ -57,9 +57,8 @@ import numpy as np
 
 
 _HOME_DIR = pathlib.Path(os.environ.get('HOME'))
-_DEFAULT_MODEL_DIR = pathlib.Path("/storage/coda1/p-jskolnick3/0/jfeldman34/scratch/AF3/AF3_Params/")
-_DEFAULT_DB_DIR = pathlib.Path("/storage/coda1/p-jskolnick3/0/jfeldman34/scratch/AF3/")
-_DEFAULT_OUTPUT_DIR = pathlib.Path("/storage/coda1/p-jskolnick3/0/jfeldman34/alphafold3/new_output_dir/")
+_DEFAULT_MODEL_DIR = _HOME_DIR / 'models'
+_DEFAULT_DB_DIR = _HOME_DIR / 'public_databases'
 
 
 # Input and output paths.
@@ -160,7 +159,7 @@ _NTRNA_DATABASE_PATH = flags.DEFINE_string(
 )
 _RFAM_DATABASE_PATH = flags.DEFINE_string(
     'rfam_database_path',
-    '${DB_DIR}/rfam_14_9_clust_seq_id_90_cov_80_rep_seq.fasta',
+    '${DB_DIR}/rfam_14_9_clust_seq_id_90_cov_80_rep_seq.fasta', 
     'Rfam database path, used for RNA MSA search.',
 )
 _RNA_CENTRAL_DATABASE_PATH = flags.DEFINE_string(
@@ -168,9 +167,23 @@ _RNA_CENTRAL_DATABASE_PATH = flags.DEFINE_string(
     '${DB_DIR}/rnacentral_active_seq_id_90_cov_80_linclust.fasta',
     'RNAcentral database path, used for RNA MSA search.',
 )
+def get_pdb_database_path():
+    base_path = os.path.expandvars('${DB_DIR}')
+    tar_path = os.path.join(base_path, 'pdb_2022_09_28_mmcif_files.tar')
+    dir_path = os.path.join(base_path, 'mmcif_files')
+    dir_path = os.path.normpath(dir_path)
+    if os.path.isfile(tar_path):
+        return tar_path
+    elif os.path.isdir(dir_path):
+        return dir_path
+    else:
+        raise FileNotFoundError(
+            f"Neither the tar file ({tar_path}) nor the mmcif_files directory ({dir_path}) is available."
+        )
+
 _PDB_DATABASE_PATH = flags.DEFINE_string(
     'pdb_database_path',
-    '${DB_DIR}/pdb_2022_09_28_mmcif_files.tar',
+    get_pdb_database_path(),
     'PDB database directory with mmCIF files path, used for template search.',
 )
 _SEQRES_DATABASE_PATH = flags.DEFINE_string(
