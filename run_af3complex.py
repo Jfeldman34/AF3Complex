@@ -16,11 +16,12 @@ def parse_arguments():
     return parser.parse_args()
 
 def get_processing_file_path(json_file_path):
+    "loads the processing file path"
     json_dir = os.path.dirname(json_file_path)
     return os.path.join(json_dir, "processing_file.txt")
 
 def add_to_processing(processing_file, object_name):
-   
+    """adds a protein to the processing file and locks the file temporarily"""
     with open(processing_file, "a+") as f:
         fcntl.flock(f, fcntl.LOCK_EX) 
         f.seek(0)
@@ -31,7 +32,7 @@ def add_to_processing(processing_file, object_name):
         print(f"Processing {object_name}")
 
 def remove_from_processing(processing_file, object_name):
-   
+   """removes a protein from the processing file once processing is complete"""
     try:
         with open(processing_file, "r+") as f:
             fcntl.flock(f, fcntl.LOCK_EX)  
@@ -46,7 +47,8 @@ def remove_from_processing(processing_file, object_name):
         pass  
 
 def is_in_processing(processing_file, object_name):
-   
+   """checks if a protein is currently being processed, which is useful
+   for parallel processing"""
     try:
         with open(processing_file, "r") as f:
             fcntl.flock(f, fcntl.LOCK_SH) 
@@ -59,7 +61,7 @@ def is_in_processing(processing_file, object_name):
         return False  
 
 def load_json_objects(file_path):
-    
+    """loads a json file"""
     with open(file_path, 'r') as file:
         data = json.load(file)
     return data
@@ -73,23 +75,26 @@ def main():
     output_dir = args.output_dir
     input_json_type = args.input_json_type
     new_temp_file_path = None 
-
-
+    
+    #locates the file containing the input proteins. 
     processing_file = get_processing_file_path(json_file_path)
 
+    #iterates over every protein in the list in the input file. 
     for individual_json in load_json_objects(json_file_path):
         protein_id = individual_json['name']
         output_dir_check = os.path.join(output_dir, individual_json['name'])
         output_lower_dir_check = os.path.join(output_dir, individual_json['name'].lower())
-
+        
+        #checks if the protein has already been processed.
         if os.path.isdir(output_dir_check) or os.path.isdir(output_lower_dir_check) or is_in_processing(processing_file, individual_json['name']):
             print(f"A model has already been generated for {individual_json['name']}")
             continue
-
+        
         sequences = individual_json.get('sequences', [])
         contains_ligand = any('ligand' in seq for seq in sequences)
         print(f"Contains ligands: {contains_ligand}")
 
+        #creates a temporary json file containing the information for the protein
         with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
             if input_json_type == 'server': 
                 json.dump([individual_json], temp_file)
@@ -97,7 +102,7 @@ def main():
                 json.dump(individual_json, temp_file)
 
             temp_file_path = temp_file.name
-
+`       
         command = [
             "python", "run_intermediate.py",
             f"--json_path={temp_file_path}",
@@ -108,10 +113,13 @@ def main():
 
         try:
             add_to_processing(processing_file, individual_json['name'])
+            
+            #runs the command to generate the protein structures. 
             subprocess.run(command, check=True)
             print(f"First model successfully generated for {individual_json['name']}")
 
             if contains_ligand:
+                #runs the protein again if there are ligands or ions in the input information. 
                 protein_folder = os.path.join(output_dir, protein_id.lower())
                 data_json_path = os.path.join(protein_folder, f"{protein_id.lower()}_data.json")
                 if os.path.exists(data_json_path):
@@ -138,18 +146,22 @@ def main():
                         f"--db_dir={db_dir}",
                         f"--output_dir={output_dir}"
                     ]
+                    
+                    #generates a secondary model for the protein without ligands or ions. 
                     subprocess.run(second_command, check=True)
                     print(f"Second model successfully generated for {individual_json['name']}")
                     os.remove(new_temp_file_path)
         except subprocess.CalledProcessError as e:
             print(f"Error running the AlphaFold intermediary script for {individual_json['name']}: {e}")
         finally:
+            #deletes any temporary files. 
             os.remove(temp_file_path)
             remove_from_processing(processing_file, individual_json['name'])
             if new_temp_file_path and os.path.exists(new_temp_file_path):
                  os.remove(new_temp_file_path)  #
         if contains_ligand: 
             try:
+                #compares the two protein structures, with and without ligands, if they exist. 
                 protein_folder = os.path.join(output_dir, protein_id.lower())
                 protein_summary_path = os.path.join(protein_folder, f"{protein_id.lower()}_summary_confidences.json")
                 without_ligand_folder = os.path.join(output_dir, f"{protein_id.lower()}_without_ligands")
@@ -164,7 +176,8 @@ def main():
                     without_ligand_summary = json.load(f)
                 without_ligand_ranking_score = without_ligand_summary.get('ranking_score', -1)
                 print(f"Without ligands score: {without_ligand_ranking_score}")
-            
+
+                #keeps the structure that has the best model confidence. 
                 if protein_ranking_score > without_ligand_ranking_score:
                     shutil.rmtree(without_ligand_folder)
                     os.rename(protein_folder, os.path.join(output_dir, protein_id.lower()))
