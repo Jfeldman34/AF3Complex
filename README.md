@@ -50,7 +50,12 @@ model parameters or outputs produced by those should cite:
 
 ```TBD```
 
+## Accessing dat from the study
 
+Please visit 
+[our Zenodo page](docs/known_issues.md) to view the structural predictions from the study 
+as well as the input parameters for the CASP16 predictions, which can be input directly
+into the AF3Complex model. 
 
 
 ## Acknowledgements
