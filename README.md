@@ -52,8 +52,7 @@ model parameters or outputs produced by those should cite:
 
 ## Accessing dat from the study
 
-Please visit 
-[our Zenodo page](docs/known_issues.md) to view the structural predictions from the study 
+Please visit [our Zenodo page]([docs/known_issues.md](https://zenodo.org/records/14927488?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjNmMTMwYzNmLTNmZjItNGFlZS1iNDUyLWU2Njc5ZDlkMTYyYSIsImRhdGEiOnt9LCJyYW5kb20iOiJhYmQ5NjZiODM2OTdiZjQ2OWZjYjFjZjNlYzFjNTRmMSJ9.F40J_RC-u3dAoBpGpYWaXc8bp3N3_Ynl4et50HLpo2dhBNr58mX0eiu4yFajVB28fPsu3xRg6j2PXaxHEPI-DA)) to view the structural predictions from the study 
 as well as the input parameters for the CASP16 predictions, which can be input directly
 into the AF3Complex model. 
 
