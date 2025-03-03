@@ -21,11 +21,12 @@ is a useful reference for this case.
 
 Proceed only if `nvidia-smi` has a sensible output.
 
-```
 
 ## Obtaining AF3Complex Source Code
 
+
 Install `git` and download the AF3Complex repository:
+
 
 ```
 git clone https://github.com/Jfeldman34/AF3Complex.git
