@@ -55,7 +55,19 @@ into the AF3Complex model.
 Any publication that discloses findings arising from using this source code, the
 model parameters or outputs produced by those should cite:
 
-```TBD```
+```
+@article {Feldman2025.02.27.640585,
+	author = {Feldman, Jonathan and Skolnick, Jeffrey},
+	title = {AF3Complex Yields Improved Structural Predictions of Protein Complexes},
+	elocation-id = {2025.02.27.640585},
+	year = {2025},
+	doi = {10.1101/2025.02.27.640585},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2025/03/03/2025.02.27.640585},
+	eprint = {https://www.biorxiv.org/content/early/2025/03/03/2025.02.27.640585.full.pdf},
+	journal = {bioRxiv}
+}
+```
 
 
 ## Acknowledgements
