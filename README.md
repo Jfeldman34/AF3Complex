@@ -52,8 +52,8 @@ into the AF3Complex model.
 
 ## Citing This Work
 
-Any publication that discloses findings arising from using this source code, the
-model parameters or outputs produced by those should cite:
+Any publication that discloses findings arising from using this source code or outputs produced by this source code
+should cite:
 
 ```
 @article {Feldman2025.02.27.640585,
