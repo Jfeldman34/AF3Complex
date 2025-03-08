@@ -119,7 +119,7 @@ output directory. All samples along with their associated confidences are
 available in subdirectories of the output directory.
 
 For ranking of the full complex use the `ranking_score` (higher is better). This
-score uses overall structure confidence (pIS), but also includes terms
+score uses interfacial structure confidence (pIS), but also includes terms
 that penalize clashes.
 
 If you are interested in a specific entity or interaction, you may want to rank
