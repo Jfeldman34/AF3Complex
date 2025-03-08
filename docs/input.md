@@ -6,8 +6,8 @@ You can provide inputs to `run_af3complex.py` by
 using the `--json_path` flag followed by the path to a
 single JSON file containing a list of JSON objects in the input format specified below.
 
-You must specify the input format for the JSONS in the list of JSON objects as either 
-`af3` or `server`, depending on whether you use the AlphaFold3 or AlphaFoldServer input formats. 
+You must specify the input format for the JSONs in the list of JSON objects as either 
+`af3` or `server`, depending on whether you use the AlphaFold3 or AlphaFold Server input formats. 
 
 In example, would look like the following if the input was in the `af3` format. 
 
@@ -123,7 +123,7 @@ AF3Complex can use either the custom JSON input format for the AlphaFoldServer, 
 [AlphaFold Server JSON input format](https://github.com/google-deepmind/alphafold/tree/main/server), 
 or the custom AlphaFold3 input format. 
 
-Unlike the AlphaFoldServer format, the custom AlphaFold3 format allows:
+Unlike the AlphaFoldServer format, the custom AlphaFold3 format allows for:
 
 *   Specifying protein, RNA, and DNA chains, including modified residues.
 *   Specifying custom multiple sequence alignment (MSA) for protein and RNA
