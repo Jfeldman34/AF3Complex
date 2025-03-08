@@ -119,10 +119,8 @@ output directory. All samples along with their associated confidences are
 available in subdirectories of the output directory.
 
 For ranking of the full complex use the `ranking_score` (higher is better). This
-score uses overall structure confidences (pTM and ipTM), but also includes terms
-that penalize clashes and encourage disordered regions not to have spurious
-helices – these extra terms mean the score should only be used to rank
-structures.
+score uses overall structure confidence (pIS), but also includes terms
+that penalize clashes.
 
 If you are interested in a specific entity or interaction, you may want to rank
 by a metric specific to that chain or chain-pair, as opposed to the full
