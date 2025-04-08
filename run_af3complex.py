@@ -64,7 +64,7 @@ def load_json_objects(file_path):
     """loads a json file"""
     with open(file_path, 'r') as file:
         data = json.load(file)
-    return data
+    return data if isinstance(data, list) else [data]
 
 def main():
     args = parse_arguments()
