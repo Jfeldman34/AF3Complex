@@ -28,6 +28,8 @@ See the [installation documentation](docs/installation.md).
 There are several flags that one must pass into the `run_af3complex.py` program, to
 list them all run `python run_af3complex.py --help`. 
 
+To run some example processes, please refer to the [example documentation](examples/examples.md).
+
 ## AF3Complex Input
 
 See the [input documentation](docs/input.md).
