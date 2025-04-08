@@ -4,7 +4,7 @@
 
 Accurate structures of protein complexes are essential for understanding biological pathway function. A previous study showed how downstream modifications to AlphaFold 2 could yield AF2Complex, a model better suited for protein complexes. Here, we introduce AF3Complex, a model equipped with the same improvements as AF2Complex, along with a novel method for excluding ligands, built on AlphaFold 3.
 
-# Software
+## Software
 
 The following package provides the full implementation of the AF3Complex protein
 structure prediction pipeline.
