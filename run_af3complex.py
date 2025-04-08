@@ -32,7 +32,7 @@ def add_to_processing(processing_file, object_name):
         print(f"Processing {object_name}")
 
 def remove_from_processing(processing_file, object_name):
-   """removes a protein from the processing file once processing is complete"""
+    """removes a protein from the processing file once processing is complete"""
     try:
         with open(processing_file, "r+") as f:
             fcntl.flock(f, fcntl.LOCK_EX)  
@@ -47,8 +47,8 @@ def remove_from_processing(processing_file, object_name):
         pass  
 
 def is_in_processing(processing_file, object_name):
-   """checks if a protein is currently being processed, which is useful
-   for parallel processing"""
+    """checks if a protein is currently being processed, which is useful
+    for parallel processing"""
     try:
         with open(processing_file, "r") as f:
             fcntl.flock(f, fcntl.LOCK_SH) 
