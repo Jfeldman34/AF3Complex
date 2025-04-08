@@ -22,4 +22,4 @@ python run_af3complex.py \
   --model_dir=$model_weights_path \
   --db_dir=$DB_DIR \
   --output_dir=$output_dir_path \
-  --input_json_type='server'
+  --input_json_type='af3'
