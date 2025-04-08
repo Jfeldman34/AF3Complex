@@ -101,8 +101,7 @@ def main():
             else: 
                 json.dump(individual_json, temp_file)
 
-            temp_file_path = temp_file.name
-`       
+            temp_file_path = temp_file.name      
         command = [
             "python", "run_intermediate.py",
             f"--json_path={temp_file_path}",
