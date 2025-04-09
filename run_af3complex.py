@@ -16,7 +16,7 @@ def parse_arguments():
     return parser.parse_args()
 
 def get_processing_file_path(json_file_path):
-    "loads the processing file path"
+    """loads the processing file path"""
     json_dir = os.path.dirname(json_file_path)
     return os.path.join(json_dir, "processing_file.txt")
 
