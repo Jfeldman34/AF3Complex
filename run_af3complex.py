@@ -130,10 +130,7 @@ def main():
                     new_json['sequences'] = new_sequences
 
                     with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as new_temp_file:
-                        if input_json_type == 'server': 
-                            json.dump([new_json], new_temp_file)
-                        else: 
-                            json.dump(new_json, new_temp_file)
+                        json.dump(new_json, new_temp_file) 
                         new_temp_file_path = new_temp_file.name
 
                     print(f"Generating a secondary model for {individual_json['name']}")
