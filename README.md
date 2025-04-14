@@ -49,12 +49,6 @@ Known issues are documented in the
 [known issues documentation](docs/known_issues.md). The known issues listed include
 those of AlphaFold3 as several of them correspond directly to known issues of AF3Complex. 
 
-## Accessing Data From The Study
-
-Please visit [our Zenodo page](https://zenodo.org/records/14927488?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjNmMTMwYzNmLTNmZjItNGFlZS1iNDUyLWU2Njc5ZDlkMTYyYSIsImRhdGEiOnt9LCJyYW5kb20iOiJhYmQ5NjZiODM2OTdiZjQ2OWZjYjFjZjNlYzFjNTRmMSJ9.F40J_RC-u3dAoBpGpYWaXc8bp3N3_Ynl4et50HLpo2dhBNr58mX0eiu4yFajVB28fPsu3xRg6j2PXaxHEPI-DA) to view the structural predictions from the study 
-as well as the input parameters for the CASP16 predictions, which can be input directly
-into the AF3Complex model. 
-
 
 ## Citing This Work
 
