@@ -487,7 +487,7 @@ class MSA:
             query_sequence=sequence,
             chain_poly_type=chain_type,
             a3m=unpaired_a3m,
-            deduplicate=True,
+            deduplicate=False,
         )
         
 
