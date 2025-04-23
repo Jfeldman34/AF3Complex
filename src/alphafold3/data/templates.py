@@ -517,6 +517,9 @@ class Templates:
     """
 
     def hit_generator(a3m: str):
+      if not a3m:
+        return  # Hmmsearch could return an empty string if there are no hits.
+
       for hit_seq, hit_desc in parsers.lazy_parse_fasta_string(a3m):
         pdb_id, auth_chain_id, start, end, full_length = _parse_hit_description(
             hit_desc
@@ -776,7 +779,9 @@ def _parse_hit_metadata(
   try:
     cif = mmcif.from_string(structure_store.get_mmcif_str(pdb_id))
   except structure_stores.NotFoundError:
-    logging.warning('Failed to get mmCIF for %s.', pdb_id)
+    logging.warning(
+        'Failed to get mmCIF for %s (author chain %s).', pdb_id, auth_chain_id
+    )
     return None, None, None
   release_date = mmcif.get_release_date(cif)
 
