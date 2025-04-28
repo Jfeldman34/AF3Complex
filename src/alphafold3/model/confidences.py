@@ -189,9 +189,6 @@ def get_IS_ranking_score(
     ptm: float, IS_score: float, fraction_disordered_: float, has_clash_: bool
 ) -> float:
   # pTM will be used when there is only one chain.
-  if IS_score == 0:
-    ranking_value = ptm
-  else:
     ranking_value = IS_score
   return (
       ranking_value
