@@ -188,7 +188,7 @@ def has_clash(
 def get_IS_ranking_score(
     ptm: float, IS_score: float, fraction_disordered_: float, has_clash_: bool
 ) -> float:
-  # pTM will be used when there is only one chain.
+  # pIS score will be used when there is only one chain or no interacting chains.
     ranking_value = IS_score
   return (
       ranking_value
