@@ -188,7 +188,10 @@ def has_clash(
 def get_IS_ranking_score(
     ptm: float, IS_score: float, fraction_disordered_: float, has_clash_: bool
 ) -> float:
-  # pIS score will be used when there is only one chain or no interacting chains.
+  # pTM will be used when there is only one chain.
+  if IS_score == 0:
+    ranking_value = ptm
+  else:
     ranking_value = IS_score
   return (
       ranking_value
@@ -663,7 +666,6 @@ def chain_pairwise_predicted_tm_scores(
 def predicted_tm_score_for_IS(
     full_pae: np.ndarray,
     bin_centers: np.ndarray,
-    pair_mask: np.ndarray,
     residue_weights: Optional[np.ndarray] = None,
     chain_mask: Optional[np.ndarray] = None,
     inter_chain_mask: Optional[np.ndarray] = None) -> np.ndarray:
@@ -672,8 +674,6 @@ def predicted_tm_score_for_IS(
   Args:
     full_pae: [num_res, num_res, num_bins] the full predicted alignment error from the confidence head.
     bin_centers: [num_bins] the normalized centers of the error bins
-    pair_mask: A [num_res, num_res] mask. The TM score will only aggregate over
-      masked-on entries.
     residue_weights: [num_res] the per residue weights to use for the
       expectation used only for IS-score calculations. 
 
