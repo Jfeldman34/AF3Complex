@@ -780,8 +780,7 @@ def predicted_interface_tm_score(
     
     
   # Operate only over interfacial residues
-  '''print("The residue weights for the piTM are: ")
-    get_ranking_score(residue_weights)'''
+
   if residue_weights is None:
     residue_weights = np.ones(full_pae.shape[0])
   residue_weights = residue_weights * residue_mask
