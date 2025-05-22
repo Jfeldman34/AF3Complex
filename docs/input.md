@@ -2,8 +2,10 @@
 
 ## Specifying Input Files
 
-You can provide inputs to `run_af3complex.py` by
-using the `--json_path` flag followed by the path to a
+Before running the inference pipeline with AF3Complex, you must first generate features. 
+
+You can provide inputs to `run_feature_generation.py` by
+using the `--json_file_path` flag followed by the path to a
 single JSON file containing a list of JSON objects in the input format specified below.
 
 You must specify the input format for the JSONs in the list of JSON objects as either 
@@ -116,6 +118,17 @@ An example of a file with JSONs in the `server` format is as follows.
     }]
 
 ```
+
+## Feature Generation
+
+Once feature generation is complete, you will have a directory of subfolders each containing the input features needed for AF3Complex inference. 
+This directory is the one specified in the `--feature_dir` argument in the `fun_feature_generation.py` file. 
+
+## AF3Complex Inference
+
+To run the inference pipeline with AF3Complex, specify the `--feature_dir_path` in the arguments for `run_af3complex_inference.py` to be the same
+as the `--feature_dir` for your generated features. From there, so long as feature generation was properly completed, all should run smoothly and 
+the modeled structures will be in the directory specified in the `--output_dir` argument. 
 
 ## Input Format
 
