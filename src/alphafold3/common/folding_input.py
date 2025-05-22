@@ -1004,6 +1004,18 @@ class Input:
     lower_spaceless_name = self.name.lower().replace(' ', '_')
     allowed_chars = set(string.ascii_lowercase + string.digits + '_-.')
     return ''.join(l for l in lower_spaceless_name if l in allowed_chars)
+    
+  def with_multiple_seeds(self, num_seeds: int) -> Self:
+    """Returns a copy of the input with num_seeds rng seeds."""
+    if num_seeds <= 1:
+      raise ValueError('Number of seeds must be greater than 1.')
+    if len(self.rng_seeds) != 1:
+      raise ValueError('Input must have one rng seed to set multiple seeds.')
+
+    return dataclasses.replace(
+        self,
+        rng_seeds=list(range(self.rng_seeds[0], self.rng_seeds[0] + num_seeds)),
+    )
 
 
 def check_unique_sanitised_names(fold_inputs: Sequence[Input]) -> None:
@@ -1013,7 +1025,7 @@ def check_unique_sanitised_names(fold_inputs: Sequence[Input]) -> None:
     raise ValueError(
         f'Fold inputs must have unique sanitised names, got {names}.'
     )
-
+    
 
 def load_fold_inputs_from_path(json_path: pathlib.Path) -> Sequence[Input]:
   """Loads multiple fold inputs from a JSON string."""
