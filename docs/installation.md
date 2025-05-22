@@ -137,7 +137,7 @@ Run the AF3Complex feature generation pipeline with the following command, subst
 and values.  
 
 ```
-un_feature_generation.py --json_file_path=input_json_path --model_dir=model_parameters_path
+run_feature_generation.py --json_file_path=input_json_path --model_dir=model_parameters_path
 --db_dir=database_dir_path --feature_dir=features_output_path --input_json_type=either_af3_or_server
 ```
 
