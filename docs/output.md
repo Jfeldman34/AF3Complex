@@ -6,6 +6,9 @@ For every input job, AF3Complex writes all its outputs in a directory called by
 the sanitized version of the job name. E.g. for job name "My first fold (test)",
 AF3Complex will write its outputs in a directory called `my_first_fold_test`.
 
+These outputs will appear in the directory specified in the `--output_directory`
+argument specified in the arguments for  `run_af3complex_inference.py `.
+
 The following structure is used within the output directory:
 
 *   Sub-directories with results for each sample and seed. There will be
