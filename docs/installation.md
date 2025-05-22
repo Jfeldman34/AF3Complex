@@ -133,12 +133,20 @@ export XLA_FLAGS="--xla_gpu_enable_triton_gemm=false"
 
 You can now run AF3Complex on your device! 
 
-Run AF3Complex repository with the following command, substituting the appropriate paths
+Run the AF3Complex feature generation pipeline with the following command, substituting the appropriate paths
 and values.  
 
 ```
-run_af3complex.py --json_file_path=input_json_path --model_dir=model_parameters_path
---db_dir=database_dir_path --output_dir=output_dir_path --input_json_type=either_af3_or_server
+un_feature_generation.py --json_file_path=input_json_path --model_dir=model_parameters_path
+--db_dir=database_dir_path --feature_dir=features_output_path --input_json_type=either_af3_or_server
+```
+
+And then continue by running the inference pipeline with the following command, substituting the appropriate paths
+and values. 
+
+```
+run_af3complex_inference.py --feature_dir_path=feature_dir --model_dir=model_parameters_path
+--db_dir=database_dir_path --output_dir=output_dir_path
 ```
 
 
