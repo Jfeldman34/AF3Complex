@@ -58,9 +58,9 @@ import numpy as np
 
 
 _HOME_DIR = pathlib.Path(os.environ.get('HOME'))
-_DEFAULT_MODEL_DIR = pathlib.Path("/storage/coda1/p-jskolnick3/0/jfeldman34/scratch/AF3/AF3_Params/")
-_DEFAULT_DB_DIR = pathlib.Path("/storage/coda1/p-jskolnick3/0/jfeldman34/scratch/AF3/")
-_DEFAULT_OUTPUT_DIR = pathlib.Path("/storage/coda1/p-jskolnick3/0/jfeldman34/alphafold3/new_output_dir/")
+_DEFAULT_MODEL_DIR = _HOME_DIR / 'models'
+_DEFAULT_DB_DIR = _HOME_DIR / 'public_databases'
+_DEFAULT_OUTPUT_DIR = _HOME_DIR / 'output'
 
 
 # Input and output paths.
