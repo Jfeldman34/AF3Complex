@@ -192,7 +192,7 @@ def get_IS_ranking_score(
     # pTM will be used when there is only one chain.
   # pIS score will be used when there is only one chain or no interacting chains.
     ranking_value = IS_score
-  return (
+    return (
       ranking_value
       - _CLASH_PENALIZATION_WEIGHT * has_clash_
   )
