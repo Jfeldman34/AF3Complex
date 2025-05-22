@@ -121,7 +121,7 @@ An example of a file with JSONs in the `server` format is as follows.
 
 ## Feature Generation
 
-Once feature generation is complete, you will have a directory of subfolders each containing the input features needed for AF3Complex inference. 
+Once feature generation is complete, you will have a directory of subdirectories each containing the input features needed for AF3Complex inference. 
 This directory is the one specified in the `--feature_dir` argument in the `fun_feature_generation.py` file. 
 
 ## AF3Complex Inference
