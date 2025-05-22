@@ -49,7 +49,8 @@ from alphafold3.model import params
 from alphafold3.model import post_processing
 from alphafold3.model.components import base_model
 from alphafold3.model.components import utils
-from alphafold3.model.diffusion import model as diffusion_model
+from alphafold3.model.diffusion import model as model
+
 import haiku as hk
 import jax
 from jax import numpy as jnp
@@ -57,10 +58,9 @@ import numpy as np
 
 
 _HOME_DIR = pathlib.Path(os.environ.get('HOME'))
-_DEFAULT_MODEL_DIR = _HOME_DIR / 'models'
-_DEFAULT_DB_DIR = _HOME_DIR / 'public_databases'
-_DEFAULT_OUTPUT_DIR = _HOME_DIR / 'output'
-
+_DEFAULT_MODEL_DIR = pathlib.Path("/storage/coda1/p-jskolnick3/0/jfeldman34/scratch/AF3/AF3_Params/")
+_DEFAULT_DB_DIR = pathlib.Path("/storage/coda1/p-jskolnick3/0/jfeldman34/scratch/AF3/")
+_DEFAULT_OUTPUT_DIR = pathlib.Path("/storage/coda1/p-jskolnick3/0/jfeldman34/alphafold3/new_output_dir/")
 
 
 # Input and output paths.
@@ -161,7 +161,7 @@ _NTRNA_DATABASE_PATH = flags.DEFINE_string(
 )
 _RFAM_DATABASE_PATH = flags.DEFINE_string(
     'rfam_database_path',
-    '${DB_DIR}/rfam_14_9_clust_seq_id_90_cov_80_rep_seq.fasta', 
+    '${DB_DIR}/rfam_14_9_clust_seq_id_90_cov_80_rep_seq.fasta',
     'Rfam database path, used for RNA MSA search.',
 )
 _RNA_CENTRAL_DATABASE_PATH = flags.DEFINE_string(
@@ -169,23 +169,9 @@ _RNA_CENTRAL_DATABASE_PATH = flags.DEFINE_string(
     '${DB_DIR}/rnacentral_active_seq_id_90_cov_80_linclust.fasta',
     'RNAcentral database path, used for RNA MSA search.',
 )
-def get_pdb_database_path():
-    base_path = os.path.expandvars('${DB_DIR}')
-    tar_path = os.path.join(base_path, 'pdb_2022_09_28_mmcif_files.tar')
-    dir_path = os.path.join(base_path, 'mmcif_files')
-    dir_path = os.path.normpath(dir_path)
-    if os.path.isfile(tar_path):
-        return tar_path
-    elif os.path.isdir(dir_path):
-        return dir_path
-    else:
-        raise FileNotFoundError(
-            f"Neither the tar file ({tar_path}) nor the mmcif_files directory ({dir_path}) is available."
-        )
-
 _PDB_DATABASE_PATH = flags.DEFINE_string(
     'pdb_database_path',
-    get_pdb_database_path(),
+    '${DB_DIR}/pdb_2022_09_28_mmcif_files.tar',
     'PDB database directory with mmCIF files path, used for template search.',
 )
 _SEQRES_DATABASE_PATH = flags.DEFINE_string(
@@ -245,11 +231,31 @@ _FLASH_ATTENTION_IMPLEMENTATION = flags.DEFINE_enum(
         ' across GPU devices.'
     ),
 )
+
+_NUM_RECYCLES = flags.DEFINE_integer(
+    'num_recycles',
+    10,
+    'Number of recycles to use during inference.',
+    lower_bound=1,
+)
 _NUM_DIFFUSION_SAMPLES = flags.DEFINE_integer(
     'num_diffusion_samples',
     5,
     'Number of diffusion samples to generate.',
+    lower_bound=1,
 )
+_NUM_SEEDS = flags.DEFINE_integer(
+    'num_seeds',
+    None,
+    'Number of seeds to use for inference. If set, only a single seed must be'
+    ' provided in the input JSON. AlphaFold 3 will then generate random seeds'
+    ' in sequence, starting from the single seed specified in the input JSON.'
+    ' The full input JSON produced by AlphaFold 3 will include the generated'
+    ' random seeds. If not set, AlphaFold 3 will use the seeds as provided in'
+    ' the input JSON.',
+    lower_bound=1,
+)
+
 
 
 class ConfigurableModel(Protocol):
@@ -276,18 +282,17 @@ ModelT = TypeVar('ModelT', bound=ConfigurableModel)
 
 def make_model_config(
     *,
-    model_class: type[ModelT] = diffusion_model.Diffuser,
     flash_attention_implementation: attention.Implementation = 'triton',
     num_diffusion_samples: int = 5,
-):
+    num_recycles: int = 10
+) -> model.Diffuser.Config:
   """Returns a model config with some defaults overridden."""
-  config = model_class.Config()
-  if hasattr(config, 'global_config'):
-    config.global_config.flash_attention_implementation = (
-        flash_attention_implementation
-    )
-  if hasattr(config, 'heads'):
-    config.heads.diffusion.eval.num_samples = num_diffusion_samples
+  config = model.Diffuser.Config()
+  config.global_config.flash_attention_implementation = (
+      flash_attention_implementation
+  )
+  config.heads.diffusion.eval.num_samples = num_diffusion_samples
+  config.num_recycles = num_recycles
   return config
 
 
@@ -713,32 +718,38 @@ def main(_):
 
     print('Building model from scratch...')
     model_runner = ModelRunner(
-        model_class=diffusion_model.Diffuser,
+        model_class=model.Diffuser,
         config=make_model_config(
             flash_attention_implementation=typing.cast(
                 attention.Implementation, _FLASH_ATTENTION_IMPLEMENTATION.value
             ),
             num_diffusion_samples=_NUM_DIFFUSION_SAMPLES.value,
+            num_recycles=_NUM_RECYCLES.value
         ),
         device=devices[0],
         model_dir=pathlib.Path(MODEL_DIR.value),
     )
+    # Check we can load the model parameters before launching anything.
+    print('Checking that model parameters can be loaded...')
+    _ = model_runner.model_params
   else:
-    print('Skipping running model inference.')
     model_runner = None
 
-  print(f'Processing {len(fold_inputs)} fold inputs.')
+  num_fold_inputs = 0
   for fold_input in fold_inputs:
+    if _NUM_SEEDS.value is not None:
+      print(f'Expanding fold job {fold_input.name} to {_NUM_SEEDS.value} seeds')
+      fold_input = fold_input.with_multiple_seeds(_NUM_SEEDS.value)
     process_fold_input(
         fold_input=fold_input,
         data_pipeline_config=data_pipeline_config,
         model_runner=model_runner,
         output_dir=os.path.join(_OUTPUT_DIR.value, fold_input.sanitised_name()),
-        buckets=tuple(int(bucket) for bucket in _BUCKETS.value),
+        buckets=tuple(int(bucket) for bucket in _BUCKETS.value)
     )
+    num_fold_inputs += 1
 
-  print(f'Done processing {len(fold_inputs)} fold inputs.')
-
+  print(f'Done running {num_fold_inputs} fold jobs.')
 
 if __name__ == '__main__':
   flags.mark_flags_as_required([
