@@ -25,8 +25,8 @@ is granted solely at Google DeepMind’s discretion.
 
 See the [installation documentation](docs/installation.md).
 
-There are several flags that one must pass into the `run_af3complex.py` program, to
-list them all run `python run_af3complex.py --help`. 
+There are several flags that one must pass into the `run_feature_generation.py` and `run_af3complex_inference.py` programs, to
+list them all run the scripts with the `--help` argument. 
 
 To run some example processes, please refer to the [example documentation](examples/example.md).
 
