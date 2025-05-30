@@ -49,6 +49,11 @@ Known issues are documented in the
 [known issues documentation](docs/known_issues.md). The known issues listed include
 those of AlphaFold3 as several of them correspond directly to known issues of AF3Complex. 
 
+## Models and Features for AF3Complex Paper
+
+Please visit this [Zenodo](https://zenodo.org/records/15514353) page to view the 
+features and models for the AF3Complex paper's analyses. 
+
 
 ## Citing This Work
 
