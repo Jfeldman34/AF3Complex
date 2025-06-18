@@ -171,7 +171,7 @@ _RNA_CENTRAL_DATABASE_PATH = flags.DEFINE_string(
 )
 _PDB_DATABASE_PATH = flags.DEFINE_string(
     'pdb_database_path',
-    '${DB_DIR}/pdb_2022_09_28_mmcif_files.tar',
+    '${DB_DIR}/mmcif_files',
     'PDB database directory with mmCIF files path, used for template search.',
 )
 _SEQRES_DATABASE_PATH = flags.DEFINE_string(
