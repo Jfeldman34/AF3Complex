@@ -20,53 +20,79 @@ def get_processing_file_path(feature_dir_path):
 def get_lock_file_path(processing_file):
     return processing_file + ".lock"
 
-def add_to_processing(processing_file, object_name):
+def try_claim_protein_for_processing(processing_file, protein_id, output_dir):
+    
     lock_file_path = get_lock_file_path(processing_file)
-    with open(lock_file_path, "w") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        os.makedirs(os.path.dirname(processing_file), exist_ok=True)
-        if not os.path.exists(processing_file):
-            open(processing_file, 'w').close()
-        with open(processing_file, "r+") as f:
-            current_objects = f.read().splitlines()
-            if object_name not in current_objects:
-                f.write(object_name + "\n")
-        fcntl.flock(lock, fcntl.LOCK_UN)
-        print(f"Processing {object_name}")
+    
+  
+    os.makedirs(os.path.dirname(lock_file_path), exist_ok=True)
+    
+    
+    with open(lock_file_path, "a"):
+        pass
+    
+    with open(lock_file_path, "r") as lock_file:
+        fcntl.flock(lock_file, fcntl.LOCK_EX)
+        
+        try:
+            
+            output_dir_check = os.path.join(output_dir, protein_id)
+            output_lower_dir_check = os.path.join(output_dir, protein_id.lower())
+            
+            if os.path.isdir(output_dir_check) or os.path.isdir(output_lower_dir_check):
+                print(f"Output directory already exists for {protein_id}")
+                return False
+                
+            
+            if os.path.exists(processing_file):
+                with open(processing_file, "r") as f:
+                    current_objects = f.read().splitlines()
+                if protein_id in current_objects:
+                    print(f"{protein_id} already in processing. Skipping...")
+                    return False
+            
 
-def remove_from_processing(processing_file, object_name):
-    lock_file_path = get_lock_file_path(processing_file)
-    try:
-        with open(lock_file_path, "w") as lock:
-            fcntl.flock(lock, fcntl.LOCK_EX)
             if not os.path.exists(processing_file):
-                return
-            with open(processing_file, "r+") as f:
-                current_objects = f.read().splitlines()
-                f.seek(0)
-                f.truncate()
-                for obj in current_objects:
-                    if obj != object_name:
-                        f.write(obj + "\n")
-            fcntl.flock(lock, fcntl.LOCK_UN)
+                open(processing_file, 'w').close()
+                
+            with open(processing_file, "a") as f:
+                f.write(protein_id + "\n")
+            
+            print(f"Successfully claimed {protein_id} for processing")
+            return True
+            
+        finally:
+            fcntl.flock(lock_file, fcntl.LOCK_UN)
+
+def remove_from_processing(processing_file, protein_id):
+    lock_file_path = get_lock_file_path(processing_file)
+    
+    try:
+        if not os.path.exists(lock_file_path):
+            return
+            
+        with open(lock_file_path, "r") as lock_file:
+            fcntl.flock(lock_file, fcntl.LOCK_EX)
+            
+            try:
+                if not os.path.exists(processing_file):
+                    return
+                    
+                with open(processing_file, "r") as f:
+                    current_objects = f.read().splitlines()
+                
+                with open(processing_file, "w") as f:
+                    for obj in current_objects:
+                        if obj != protein_id:
+                            f.write(obj + "\n")
+                            
+                print(f"Removed {protein_id} from processing")
+                
+            finally:
+                fcntl.flock(lock_file, fcntl.LOCK_UN)
+                
     except FileNotFoundError:
         pass
-
-def is_in_processing(processing_file, object_name):
-    lock_file_path = get_lock_file_path(processing_file)
-    try:
-        with open(lock_file_path, "r") as lock:
-            fcntl.flock(lock, fcntl.LOCK_SH)
-            if not os.path.exists(processing_file):
-                return False
-            with open(processing_file, "r") as f:
-                current_objects = f.read().splitlines()
-            fcntl.flock(lock, fcntl.LOCK_UN)
-            if object_name in current_objects:
-                print(f"{object_name} already in processing. Skipping...")
-            return object_name in current_objects
-    except FileNotFoundError:
-        return False
 
 def main():
     args = parse_arguments()
@@ -92,10 +118,8 @@ def main():
             json_obj = json.load(f)
 
         protein_id = json_obj['name']
-        output_dir_check = os.path.join(output_dir, protein_id)
-        output_lower_dir_check = os.path.join(output_dir, protein_id.lower())
-
-        if os.path.isdir(output_dir_check) or os.path.isdir(output_lower_dir_check) or is_in_processing(processing_file, protein_id):
+        
+        if not try_claim_protein_for_processing(processing_file, protein_id, output_dir):
             print(f"A model has already been generated for {protein_id}")
             continue
 
@@ -120,7 +144,6 @@ def main():
         new_temp_file_path = None
 
         try:
-            add_to_processing(processing_file, protein_id)
             subprocess.run(command, check=True)
             print(f"First model successfully generated for {protein_id}")
 
@@ -146,7 +169,7 @@ def main():
                         f"--model_dir={model_dir}",
                         f"--db_dir={db_dir}",
                         f"--output_dir={output_dir}",
-                        "--norun_data_pipeline",
+                        f"--norun_data_pipeline",
                         f"--jax_compilation_cache_dir={feature_dir_path}"
                     ]
 
@@ -157,7 +180,8 @@ def main():
             print(f"Error running AlphaFold script for {protein_id}: {e}")
 
         finally:
-            os.remove(temp_file_path)
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
             remove_from_processing(processing_file, protein_id)
             if new_temp_file_path and os.path.exists(new_temp_file_path):
                 os.remove(new_temp_file_path)
