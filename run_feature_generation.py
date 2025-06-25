@@ -4,6 +4,7 @@ import tempfile
 import fcntl
 import os
 import argparse
+import time
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run AF3Complex Feature Generation.")
@@ -21,21 +22,43 @@ def get_processing_file_path(json_file_path):
 def get_lock_file_path(processing_file):
     return processing_file + ".lock"
 
-def add_to_processing(processing_file, object_name):
+def try_claim_for_processing(processing_file, object_name, output_dir):
+    
     lock_file_path = get_lock_file_path(processing_file)
-    with open(lock_file_path, "w") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        os.makedirs(os.path.dirname(processing_file), exist_ok=True)
-        if not os.path.exists(processing_file):
-            open(processing_file, 'w').close()
-        with open(processing_file, "r+") as f:
-            current_objects = f.read().splitlines()
-            if object_name not in current_objects:
+    
+    os.makedirs(os.path.dirname(processing_file), exist_ok=True)
+    os.makedirs(os.path.dirname(lock_file_path), exist_ok=True)
+    
+    try:
+        with open(lock_file_path, "w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            
+            output_dir_check = os.path.join(output_dir, object_name)
+            output_lower_dir_check = os.path.join(output_dir, object_name.lower())
+            
+            if os.path.isdir(output_dir_check) or os.path.isdir(output_lower_dir_check):
+                print(f"Features have already been generated for {object_name}")
+                return False
+            
+            if not os.path.exists(processing_file):
+                open(processing_file, 'w').close()
+                
+            with open(processing_file, "r+") as f:
+                current_objects = f.read().splitlines()
+                if object_name in current_objects:
+                    print(f"{object_name} already in processing. Skipping...")
+                    return False
+                
                 f.write(object_name + "\n")
-        fcntl.flock(lock, fcntl.LOCK_UN)
-        print(f"Processing {object_name}")
+                print(f"Claimed {object_name} for processing")
+                return True
+                
+    except (IOError, OSError) as e:
+        print(f"Error claiming {object_name} for processing: {e}")
+        return False
 
 def remove_from_processing(processing_file, object_name):
+    
     lock_file_path = get_lock_file_path(processing_file)
     try:
         with open(lock_file_path, "w") as lock:
@@ -49,25 +72,9 @@ def remove_from_processing(processing_file, object_name):
                 for obj in current_objects:
                     if obj != object_name:
                         f.write(obj + "\n")
-            fcntl.flock(lock, fcntl.LOCK_UN)
-    except FileNotFoundError:
-        pass
-
-def is_in_processing(processing_file, object_name):
-    lock_file_path = get_lock_file_path(processing_file)
-    try:
-        with open(lock_file_path, "r") as lock:
-            fcntl.flock(lock, fcntl.LOCK_SH)
-            if not os.path.exists(processing_file):
-                return False
-            with open(processing_file, "r") as f:
-                current_objects = f.read().splitlines()
-            fcntl.flock(lock, fcntl.LOCK_UN)
-            if object_name in current_objects:
-                print(f"{object_name} already in processing. Skipping...")
-            return object_name in current_objects
-    except FileNotFoundError:
-        return False
+            print(f"Removed {object_name} from processing")
+    except (FileNotFoundError, IOError, OSError) as e:
+        print(f"Error removing {object_name} from processing: {e}")
 
 def load_json_objects(file_path):
     with open(file_path, 'r') as file:
@@ -87,11 +94,8 @@ def main():
 
     for individual_json in load_json_objects(json_file_path):
         protein_id = individual_json['name']
-        output_dir_check = os.path.join(output_dir, protein_id)
-        output_lower_dir_check = os.path.join(output_dir, protein_id.lower())
-
-        if os.path.isdir(output_dir_check) or os.path.isdir(output_lower_dir_check) or is_in_processing(processing_file, protein_id):
-            print(f"Features have already been generated for {protein_id}")
+        
+        if not try_claim_for_processing(processing_file, protein_id, output_dir):
             continue
 
         sequences = individual_json.get('sequences', [])
@@ -105,7 +109,6 @@ def main():
                 json.dump(individual_json, temp_file)
             temp_file_path = temp_file.name
 
-        add_to_processing(processing_file, protein_id)
         try:
             command = [
                 "python", "run_intermediate.py",
@@ -117,6 +120,7 @@ def main():
                 f"--jax_compilation_cache_dir={output_dir}"
             ]
             subprocess.run(command, check=True)
+            print(f"Successfully processed {protein_id}")
         except subprocess.CalledProcessError as e:
             print(f"Feature generation failed for {protein_id}: {e}")
         finally:
