@@ -5,6 +5,7 @@ import fcntl
 import os
 import shutil
 import argparse
+import sys
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run AF3Complex Inference. You must have already generated your features!")
@@ -102,6 +103,9 @@ def main():
     output_dir = args.output_dir
     processing_file = get_processing_file_path(feature_dir_path)
 
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    intermediate_path = os.path.join(script_dir, "run_intermediate.py")
+
     for subdir in os.listdir(feature_dir_path):
         subfolder_path = os.path.join(feature_dir_path, subdir)
         if not os.path.isdir(subfolder_path):
@@ -132,7 +136,7 @@ def main():
             temp_file_path = temp_file.name
 
         command = [
-            "python", "run_intermediate.py",
+            sys.executable, intermediate_path,
             f"--json_path={temp_file_path}",
             f"--model_dir={model_dir}",
             f"--db_dir={db_dir}",
@@ -164,7 +168,7 @@ def main():
                     print(f"Generating a secondary model for {protein_id}")
 
                     second_command = [
-                        "python", "run_intermediate.py",
+                        sys.executable, intermediate_path,
                         f"--json_path={new_temp_file_path}",
                         f"--model_dir={model_dir}",
                         f"--db_dir={db_dir}",
