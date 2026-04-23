@@ -5,6 +5,7 @@ import fcntl
 import os
 import argparse
 import time
+import sys
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run AF3Complex Feature Generation.")
@@ -92,6 +93,9 @@ def main():
 
     processing_file = get_processing_file_path(json_file_path)
 
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    intermediate_path = os.path.join(script_dir, "run_intermediate.py")
+
     for individual_json in load_json_objects(json_file_path):
         protein_id = individual_json['name']
         
@@ -111,7 +115,7 @@ def main():
 
         try:
             command = [
-                "python", "run_intermediate.py",
+                sys.executable, intermediate_path,
                 f"--json_path={temp_file_path}",
                 f"--model_dir={model_dir}",
                 f"--db_dir={db_dir}",
